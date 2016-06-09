@@ -38,9 +38,8 @@ public class App {
         numberToString.put("70","Seventy");
         numberToString.put("80","Eighty");
         numberToString.put("90","Ninety");
-
-
     }
+
     public static void main(String[] args) {
         App app=new App();
         app.run();
@@ -69,41 +68,16 @@ public class App {
         }else{
             return parseBase(baseMatcher)+"Dollars";
         }
-
     }
 
     private String parseMillion(Matcher millionMatcher){
         StringBuilder result=new StringBuilder();
         String numberArray[]=millionMatcher.replaceAll("$1").split("");
-        int counter=0;
-        int length=numberArray.length;
-        if(length==3&&!numberArray[counter].equals("0")){
-            result.append(numberToString.get(numberArray[counter++])).append("Hundred");
-            length--;
-        }
 
-        if(length==2){
-            String temp=convertLastTwoDigit(numberArray[counter++] + numberArray[counter++]);
-            if(temp.equals("")&&result.length()!=0){
-                result.append("Million");
-            }else{
-                result.append(temp).append("Million");
-            }
-            length-=2;
-        }
-
-        if(length==1){
-            if(numberArray[counter]=="0"){
-                result.append("Million");
-            }else {
-                result.append(numberToString.get(numberArray[counter])).append("Million");
-            }
-        }
-
+        result.append(parseNumberToWord(numberArray,"Million"));
         result.append(parseThousand(millionMatcher));
 
         return result.toString();
-
     }
 
     private String parseThousand(Matcher thousandMatcher){
@@ -114,32 +88,7 @@ public class App {
         }else {
             numberArray=thousandMatcher.replaceAll("$2").split("");
         }
-
-        int counter=0;
-        int length=numberArray.length;
-        if(length==3&&!numberArray[counter].equals("0")){
-            result.append(numberToString.get(numberArray[counter++])).append("Hundred");
-            length--;
-        }
-
-        if(length==2){
-            String temp=convertLastTwoDigit(numberArray[counter++] + numberArray[counter++]);
-
-            if(temp.equals("")&&result.length()!=0){
-                result.append("Thousand");
-            }else{
-                result.append(temp).append("Thousand");
-            }
-            length-=2;
-        }
-
-        if(length==1){
-            if(numberArray[counter]=="0"){
-                result.append("Thousand");
-            }else {
-                result.append(numberToString.get(numberArray[counter])).append("Thousand");
-            }
-        }
+        result.append(parseNumberToWord(numberArray,"Thousand"));
         result.append(parseBase(thousandMatcher));
 
         return result.toString();
@@ -154,19 +103,40 @@ public class App {
         }else {
             numberArray=baseMatcher.replaceAll("$3").split("");
         }
+
         StringBuilder result=new StringBuilder();
+        result.append(parseNumberToWord(numberArray,""));
+
+        return result.toString();
+    }
+
+    private String parseNumberToWord(String [] numberArray, String name){
+        StringBuilder result=new StringBuilder();
+
         int counter=0;
         int length=numberArray.length;
         if(length==3&&!numberArray[counter].equals("0")){
             result.append(numberToString.get(numberArray[counter++])).append("Hundred");
             length--;
         }
+
         if(length==2){
-            result.append(convertLastTwoDigit(numberArray[counter++] + numberArray[counter++]));
-        }else if(length==1&&numberArray[counter]!="0"){
-            result.append(numberToString.get(numberArray[counter]));
+            String temp=convertLastTwoDigit(numberArray[counter++] + numberArray[counter++]);
+            if(temp.equals("")&&result.length()!=0){
+                result.append(name);
+            }else{
+                result.append(temp).append(name);
+            }
+            length-=2;
         }
 
+        if(length==1){
+            if(numberArray[counter]=="0"){
+                result.append(name);
+            }else {
+                result.append(numberToString.get(numberArray[counter])).append(name);
+            }
+        }
         return result.toString();
     }
 
